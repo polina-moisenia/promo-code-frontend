@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { initializePromoCodeService, generatePromoCodes } from "./services/promoCodeService";
-import PromoCodeList from "./components/PromoCodeList";
 import GenerateButton from "./components/GenerateButton";
 import Header from "./components/Header";
+import PromoCodeList from "./components/PromoCodeList";
 import "./styles/components.css";
+import { initializePromoCodeService, generatePromoCodes } from "./services/promoCodeService";
 
 const App = () => {
   const [promoCodes, setPromoCodes] = useState([]);
@@ -16,14 +16,14 @@ const App = () => {
         await initializePromoCodeService(
           (result) => {
             setGenerationResult(result);
-            setError(null);
+            setError(null); // Clear any previous error
           },
           (code) => {
             setPromoCodes((prevCodes) => [...prevCodes, code]);
           }
         );
       } catch (err) {
-        setError("The promo code service is currently unavailable.");
+        setError("Failed to connect to the promo code service.");
       }
     };
 
@@ -36,7 +36,7 @@ const App = () => {
     setError(null);
 
     try {
-      await generatePromoCodes(5, 8);
+      await generatePromoCodes();
     } catch (err) {
       setError("Failed to generate promo codes. Please try again later.");
     }
