@@ -22,6 +22,7 @@ export const initializePromoCodeService = async (onGenerationResult, onPromoCode
     });
   } catch (error) {
     console.error("Error connecting to SignalR hub:", error);
+    throw error;
   }
 };
 
@@ -36,6 +37,7 @@ export const generatePromoCodes = async () => {
       await connection.invoke("GeneratePromoCodes", request.count, request.length);
     } catch (error) {
       console.error("Error invoking GeneratePromoCodes:", error);
+      throw error;
     }
   } else {
     console.error("Connection is not established.");

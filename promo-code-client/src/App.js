@@ -7,22 +7,27 @@ import { initializePromoCodeService, generatePromoCodes } from "./services/promo
 
 const App = () => {
   const [promoCodes, setPromoCodes] = useState([]);
-  const [generationResult, setGenerationResult] = useState(null); // null = no request yet
   const [error, setError] = useState(null);
+  const [generationResult, setGenerationResult] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const setupSignalR = async () => {
+      setIsLoading(true);
+
       try {
         await initializePromoCodeService(
           (result) => {
             setGenerationResult(result);
-            setError(null); // Clear any previous error
+            setError(null);
           },
           (code) => {
             setPromoCodes((prevCodes) => [...prevCodes, code]);
           }
         );
+        setIsLoading(false);
       } catch (err) {
+        setIsLoading(false);
         setError("Failed to connect to the promo code service.");
       }
     };
@@ -45,7 +50,7 @@ const App = () => {
   return (
     <div className="app-container">
       <Header />
-      <GenerateButton onGenerate={handleGenerate} />
+      <GenerateButton isActive={!isLoading} onGenerate={handleGenerate} />
       {error ? (
         <p className="error-message">{error}</p>
       ) : generationResult ? (
