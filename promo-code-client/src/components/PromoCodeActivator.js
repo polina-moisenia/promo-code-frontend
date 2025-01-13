@@ -1,33 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import InputField from "./InputField";
 import Button from "./Button";
-import { PromoCodeUsageService } from "../services/promoCodeUsageService";
+import { createConnection } from "../services/signalRService";
 
 const PromoCodeActivator = () => {
   const [promoCode, setPromoCode] = useState("");
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [connection, setConnection] = useState(null);
 
-  const service = new PromoCodeUsageService(process.env.REACT_APP_PROMO_CODE_USAGE_URL);
+  useEffect(() => {
+    const conn = createConnection(process.env.REACT_APP_PROMO_CODE_USAGE_URL);
+    setConnection(conn);
+
+    return () => {
+      conn.stop();
+    };
+  }, []);
 
   const handleUseCode = async () => {
-    setError(null);
-    setResult(null);
+    if (!connection) return;
 
     try {
-      const success = await service.usePromoCode(promoCode);
+      const success = await connection.invoke("UsePromoCode", promoCode);
       if (success) {
-        setResult("Promo code used successfully!");
+        setResult(`Promo code ${promoCode} used successfully`);
+        setError(null);
+        setPromoCode("");
       } else {
-        setError("Promo code has already been used or is invalid.");
+        setError("Invalid promo code");
+        setResult(null);
       }
     } catch (err) {
-      setError(err.message);
+      console.error("Error invoking UsePromoCode:", err);
+      setError("Error: Unable to process the promo code");
+      setResult(null);
     }
   };
 
   return (
-    <div className="promo-code-activator">
+    <div>
       <div className="input-container">
         <InputField
           type="text"

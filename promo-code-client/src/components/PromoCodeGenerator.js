@@ -1,45 +1,52 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import InputField from "./InputField";
 import Button from "./Button";
-import PromoCodeList from "./PromoCodeList";
-import { PromoCodeGenerationService } from "../services/promoCodeGenerationService";
+import { createConnection } from "../services/signalRService";
 
 const PromoCodeGenerator = () => {
-  const [count, setCount] = useState(5);
+  const [count, setCount] = useState(10);
   const [length, setLength] = useState(8);
-  const [promoCodes, setPromoCodes] = useState([]);
+  const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
-  const [generationResult, setGenerationResult] = useState(null);
+  const [connection, setConnection] = useState(null);
 
-  const service = new PromoCodeGenerationService(process.env.REACT_APP_PROMO_CODE_GENERATION_URL);
+  useEffect(() => {
+    const conn = createConnection(process.env.REACT_APP_PROMO_CODE_GENERATION_URL);
+    setConnection(conn);
+
+    return () => {
+      conn.stop();
+    };
+  }, []);
 
   const handleGenerate = async () => {
-    setError(null);
-    setPromoCodes([]);
-    setGenerationResult(null);
+    if (!connection) {
+      setError("Connection not established");
+      return;
+    }
+
+    if (!count || !length || count <= 0 || length <= 0) {
+      setError("Both fields must have positive numbers");
+      return;
+    }
 
     try {
-      await service.generatePromoCodes(
-        count,
-        length,
-        (result) => {
-          setGenerationResult(result);
-          if (!result) {
-            setError("Failed to generate promo codes.");
-          }
-        },
-        (code) => {
-          setPromoCodes((prev) => [...prev, code]);
-        }
-      );
+      const success = await connection.invoke("GeneratePromoCodes", count, length);
+      if (success) {
+        setResult("Generation succeeded");
+        setError(null);
+      } else {
+        setError("Failed to generate promo codes");
+        setResult(null);
+      }
     } catch (err) {
-      setError(err.message);
-      setGenerationResult(false);
+      setError("Error: Unable to generate promo codes");
+      setResult(null);
     }
   };
 
   return (
-    <div className="promo-code-section">
+    <div>
       <div className="input-container">
         <InputField
           type="number"
@@ -58,10 +65,7 @@ const PromoCodeGenerator = () => {
         <Button onClick={handleGenerate}>Generate</Button>
       </div>
       {error && <p className="error-message">{error}</p>}
-      {generationResult === true && promoCodes.length > 0 && <PromoCodeList promoCodes={promoCodes} />}
-      {generationResult === null && promoCodes.length === 0 && !error && (
-        <p className="placeholder-text">No promo codes generated yet. Start by clicking "Generate".</p>
-      )}
+      {result && <p className="result-message">{result}</p>}
     </div>
   );
 };

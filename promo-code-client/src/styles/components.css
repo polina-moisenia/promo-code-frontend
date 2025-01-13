@@ -6,12 +6,13 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
+  overflow: hidden;
 }
 
 .input-container {
   margin: 20px 0;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 10px;
   align-items: flex-end;
 }
@@ -53,8 +54,7 @@ button:hover {
 }
 
 .promo-code-list {
-  flex: 1;
-  max-height: 100%;
+  max-height: calc(100vh - 300px);
   overflow-y: auto;
   list-style-type: none;
   padding: 0;
@@ -70,17 +70,6 @@ button:hover {
   text-transform: uppercase;
 }
 
-.promo-code-activator {
-  position: sticky;
-  bottom: 0;
-  background-color: white;
-  padding: 10px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  align-items: center;
-}
-
 .error-message {
   color: red;
   font-weight: bold;
@@ -93,9 +82,4 @@ button:hover {
   font-weight: bold;
   margin-top: 10px;
   font-size: 16px;
-}
-
-.placeholder-text {
-  color: #888;
-  font-style: italic;
 }
