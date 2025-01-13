@@ -30,11 +30,13 @@ const PromoCodeActivator = () => {
       } else {
         setError("Invalid promo code");
         setResult(null);
+        setPromoCode("");
       }
     } catch (err) {
       console.error("Error invoking UsePromoCode:", err);
       setError("Error: Unable to process the promo code");
       setResult(null);
+      setPromoCode("");
     }
   };
 

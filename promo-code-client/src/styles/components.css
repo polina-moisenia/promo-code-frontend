@@ -83,3 +83,34 @@ button:hover {
   margin-top: 10px;
   font-size: 16px;
 }
+
+..promo-code-activator {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.promo-code-activator {
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.promo-code-list {
+  max-height: 300px;
+  overflow-y: auto;
+  list-style-type: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.promo-code-list li {
+  background-color: #f0f0f0;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+  text-align: center;
+  text-transform: uppercase;
+}

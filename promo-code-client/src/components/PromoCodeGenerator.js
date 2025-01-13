@@ -9,10 +9,15 @@ const PromoCodeGenerator = () => {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [connection, setConnection] = useState(null);
+  const [generatedCodes, setGeneratedCodes] = useState([]);
 
   useEffect(() => {
     const conn = createConnection(process.env.REACT_APP_PROMO_CODE_GENERATION_URL);
     setConnection(conn);
+
+    conn.on("CodesGenerated", (codes) => {
+      setGeneratedCodes(codes);
+    });
 
     return () => {
       conn.stop();
@@ -66,6 +71,11 @@ const PromoCodeGenerator = () => {
       </div>
       {error && <p className="error-message">{error}</p>}
       {result && <p className="result-message">{result}</p>}
+      <ul className="promo-code-list">
+        {generatedCodes.map((code, index) => (
+          <li key={index}>{code}</li>
+        ))}
+      </ul>
     </div>
   );
 };

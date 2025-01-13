@@ -22,6 +22,3 @@ cd FE
 docker-compose up
 ```
 Accessible at `http://localhost:3000`.
-
----
-For full setup instructions, refer to the parent repository's README.
